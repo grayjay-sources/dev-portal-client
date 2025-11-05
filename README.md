@@ -29,11 +29,17 @@ const client = await createClient();
 
 // Load portal and inject plugin
 await client.loadPortal(8000); // Wait 8 seconds for initialization
-await client.updateTestPlugin("https://plugins.grayjay.app/Youtube/YoutubeScript.js", config);
+await client.updateTestPlugin(
+  "https://plugins.grayjay.app/Youtube/YoutubeScript.js",
+  config
+);
 
 // Simple API - Test methods on currently loaded plugin
 const enable = await client.call("enable");
-const isChannel = await client.call("isChannelUrl", "https://youtube.com/@test");
+const isChannel = await client.call(
+  "isChannelUrl",
+  "https://youtube.com/@test"
+);
 // Returns: { success: true, result: true }
 
 const home = await client.call("getHome");
@@ -81,6 +87,16 @@ new DevPortalClient(host: string, port: number = 11337)
 
 #### Methods
 
+**Simplified API (Recommended):**
+
+| Method                              | Description                                       |
+| ----------------------------------- | ------------------------------------------------- |
+| `call(method, ...args)`             | Call method on currently loaded plugin (local)    |
+| `testAndroid(method, ...args)`      | Test method on actual Android device              |
+| `callRemotely(id, method, ...args)` | Call method on specific plugin by runtime ID      |
+
+**Full API:**
+
 | Method                                | Description                                |
 | ------------------------------------- | ------------------------------------------ |
 | `ping()`                              | Check if dev portal is accessible          |
@@ -92,10 +108,20 @@ new DevPortalClient(host: string, port: number = 11337)
 | `getDevLogs(startIndex?)`             | Get development logs                       |
 | `getWarnings()`                       | Get plugin warnings                        |
 | `getPackage(packageName)`             | Get package code (bridge, http, etc.)      |
+| `getPluginProperty(id, prop)`         | Get plugin property (e.g., supportedFeatures) |
 | `fetchContent(url, contentType?)`     | Fetch content via dev portal proxy         |
 | `testLogin()`                         | Test plugin login flow                     |
 | `testLogout()`                        | Test plugin logout flow                    |
 | `testCaptcha(captchaData)`            | Test plugin captcha handling               |
+
+**Return Format:**
+```typescript
+interface RemoteCallResult<T = any> {
+  success: boolean;
+  result?: T;      // Present when success is true
+  error?: string;  // Present when success is false
+}
+```
 
 ### Discovery Functions
 
