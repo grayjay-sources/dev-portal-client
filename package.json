@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "node test/android-test.js",
+    "test": "node tests/youtube.js",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

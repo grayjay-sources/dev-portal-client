@@ -2,7 +2,7 @@
  * Simple usage example of @grayjay-sources/dev-portal-client
  */
 
-const { createClient, DevPortalClient, discoverDevices } = require("../dist");
+const { createClient, DevPortalClient, discoverDevices } = require("./dist");
 
 async function main() {
   console.log("🔍 GrayJay Dev Portal Client - Example Usage\n");
@@ -42,7 +42,8 @@ async function main() {
     console.log("📝 Next steps:");
     console.log("   - Load a plugin with client.loadPortal() and client.updateTestPlugin()");
     console.log("   - Test methods with client.testMethod(name, ...args)");
-    console.log("   - Test on Android with client.testMethodAndroid(name, ...args)\n");
+    console.log("   - Test on Android with client.testMethodAndroid(name, ...args)");
+    console.log("   - Or use the wrapper: const result = await client.plugin.getHome()\n");
 
   } catch (error) {
     console.error("❌ Error:", error.message);
@@ -55,3 +56,4 @@ if (require.main === module) {
 }
 
 module.exports = { main };
+

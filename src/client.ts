@@ -76,13 +76,7 @@ export class DevPortalClient {
     const path = `/plugin/remoteTest?method=${method}`;
 
     try {
-      // API expects args as JSON array, not object
       const response = await this.post(path, args);
-      
-      // API can return:
-      // 1. { error: "..." } for errors
-      // 2. { result: ... } for wrapped results  
-      // 3. The actual result directly (primitives, objects, arrays)
       
       if (response && typeof response === 'object' && response.error) {
         return {
@@ -91,7 +85,6 @@ export class DevPortalClient {
         };
       }
       
-      // If response has a 'result' field, use it (wrapped), otherwise use response directly
       const result = (response && typeof response === 'object' && 'result' in response) 
         ? response.result 
         : response;
@@ -278,10 +271,25 @@ export class DevPortalClient {
    * @param args Method arguments
    */
   async testMethodAndroid(method: string, ...args: any[]): Promise<RemoteCallResult> {
-    // testMethodAndroid uses the same /plugin/remoteTest endpoint but executes on Android
-    // The dev portal has a JavaScript bridge function pluginRemoteTest() that handles this
-    // We'll use the same HTTP endpoint which should work the same way
     return this.testMethod(method, ...args);
+  }
+
+  /**
+   * Plugin method wrapper - returns direct result or throws error
+   */
+  get plugin() {
+    const client = this;
+    return new Proxy({} as any, {
+      get(_target, method: string) {
+        return async (...args: any[]) => {
+          const result = await client.testMethod(method, ...args);
+          if (!result.success) {
+            throw new Error(result.error || 'Method call failed');
+          }
+          return result.result;
+        };
+      }
+    });
   }
 
   /**

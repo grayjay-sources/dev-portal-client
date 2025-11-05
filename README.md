@@ -34,13 +34,17 @@ await client.updateTestPlugin(
   config
 );
 
-// Test methods on currently loaded plugin  
+// Test methods on currently loaded plugin
 const enable = await client.testMethod("enable");
 const isChannel = await client.testMethod("isChannelUrl", "https://youtube.com/@test");
 // Returns: { success: true, result: true }
 
 const home = await client.testMethod("getHome");
 // Returns: { success: true, result: [{ name: "...", duration: 181, playbackTime: -1, thumbnails: {...} }] }
+
+// Or use the wrapper (returns result directly, throws on error)
+const videos = await client.plugin.getHome(); // Returns array directly
+const isChannel2 = await client.plugin.isChannelUrl("https://youtube.com/@test"); // Returns true
 
 // Test on actual Android device (if connected)
 const androidHome = await client.testMethodAndroid("getHome");
@@ -88,8 +92,9 @@ new DevPortalClient(host: string, port: number = 11337)
 
 | Method                                | Description                                   |
 | ------------------------------------- | --------------------------------------------- |
-| `testMethod(method, ...args)`         | Test method on currently loaded plugin        |
-| `testMethodAndroid(method, ...args)`  | Test method on actual Android device          |
+| `testMethod(method, ...args)`         | Test method, returns `{ success, result, error }` |
+| `testMethodAndroid(method, ...args)`  | Test on Android, returns `{ success, result, error }` |
+| `plugin[method](...args)`             | Wrapper - returns result directly, throws on error |
 | `ping()`                              | Check if dev portal is accessible             |
 | `loadPortal(waitTime?)`               | Load portal and wait for JS initialization    |
 | `updateTestPlugin(scriptUrl, config)` | Inject plugin into dev server                 |
