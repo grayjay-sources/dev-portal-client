@@ -1,0 +1,40 @@
+{
+  "name": "@grayjay-sources/dev-portal-client",
+  "version": "1.0.0",
+  "description": "GrayJay Dev Portal API client with automatic device discovery",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node test/example.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "grayjay",
+    "dev-portal",
+    "plugin-testing",
+    "mdns",
+    "device-discovery"
+  ],
+  "author": "Bluscream",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/grayjay-sources/dev-portal-client"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "dependencies": {
+    "bonjour": "^3.5.0"
+  },
+  "optionalDependencies": {
+    "mdns": "^2.7.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "@types/node": "^20.0.0",
+    "@types/bonjour": "^3.5.10"
+  }
+}
