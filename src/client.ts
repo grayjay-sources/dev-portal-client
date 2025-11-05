@@ -294,9 +294,42 @@ export class DevPortalClient {
   }
 
   /**
-   * Generic GET request
+   * Retry helper for requests
+   */
+  private async retry<T>(fn: () => Promise<T>, maxRetries: number = 3): Promise<T> {
+    let lastError: Error | undefined;
+    
+    for (let i = 0; i <= maxRetries; i++) {
+      try {
+        return await fn();
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
+        
+        // Only retry on timeout errors
+        if (i < maxRetries && lastError.message.includes('timeout')) {
+          // Wait a bit before retrying (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+          continue;
+        }
+        
+        throw lastError;
+      }
+    }
+    
+    throw lastError!;
+  }
+
+  /**
+   * Generic GET request (with retry on timeout)
    */
   private async get(path: string): Promise<any> {
+    return this.retry(() => this.getRequest(path));
+  }
+
+  /**
+   * Internal GET request implementation
+   */
+  private async getRequest(path: string): Promise<any> {
     return new Promise((resolve, reject) => {
       const req = http.get(`${this.baseUrl}${path}`, { timeout: 10000 }, (res) => {
         let data = '';
@@ -329,11 +362,11 @@ export class DevPortalClient {
   }
 
   /**
-   * Generic POST request (auto-stringifies payload)
+   * Generic POST request (auto-stringifies payload, with retry on timeout)
    */
   private async post(path: string, payload: any, debug: boolean = false): Promise<any> {
     const data = typeof payload === 'string' ? payload : JSON.stringify(payload);
-    return this.postRaw(path, data, debug);
+    return this.retry(() => this.postRaw(path, data, debug));
   }
 
   /**
