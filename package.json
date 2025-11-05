@@ -1,6 +1,6 @@
 {
   "name": "@grayjay-sources/dev-portal-client",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "GrayJay Dev Portal API client with smart device discovery and simplified testing API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -27,14 +27,13 @@
     "node": ">=14"
   },
   "dependencies": {
-    "bonjour": "^3.5.0"
+    "bonjour-service": "^1.3.0"
   },
   "optionalDependencies": {
     "mdns": "^2.7.2"
   },
   "devDependencies": {
     "typescript": "^5.4.5",
-    "@types/node": "^20.0.0",
-    "@types/bonjour": "^3.5.10"
+    "@types/node": "^20.0.0"
   }
 }

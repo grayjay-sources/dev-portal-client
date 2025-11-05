@@ -15,9 +15,9 @@ const SYNC_SERVICE_NAME = '_gsync._tcp.local';
  */
 export async function discoverViaMDNS(timeout: number = 3000): Promise<DeviceInfo[]> {
   try {
-    // Try bonjour first (required dependency)
-    const Bonjour = require('bonjour');
-    const bonjour = Bonjour();
+    // Try bonjour-service first (required dependency, no IP vulnerability)
+    const Bonjour = require('bonjour-service');
+    const bonjour = new Bonjour();
 
     return new Promise((resolve) => {
       const devices: DeviceInfo[] = [];
