@@ -24,9 +24,11 @@ export async function discoverViaMDNS(timeout: number = 3000): Promise<DeviceInf
 
       const browser = bonjour.find({ type: 'gsync' }, (service: any) => {
         const addresses = service.addresses || [];
-        const mainAddress = addresses[0] || service.referer?.address;
+        // Filter IPv4 addresses only for now (IPv6 support can be added later)
+        const ipv4Address = addresses.find((addr: string) => addr && /^[0-9.]+$/.test(addr));
+        const mainAddress = ipv4Address || service.referer?.address || service.host;
 
-        if (mainAddress) {
+        if (mainAddress && typeof mainAddress === 'string' && mainAddress.length > 0) {
           devices.push({
             name: service.name,
             host: mainAddress,
@@ -59,9 +61,11 @@ export async function discoverViaMDNS(timeout: number = 3000): Promise<DeviceInf
 
         browser.on('serviceUp', (service: any) => {
           const addresses = service.addresses || [];
-          const mainAddress = addresses[0] || service.host;
+          // Filter IPv4 addresses only for now
+          const ipv4Address = addresses.find((addr: string) => addr && /^[0-9.]+$/.test(addr));
+          const mainAddress = ipv4Address || service.host;
 
-          if (mainAddress) {
+          if (mainAddress && typeof mainAddress === 'string' && mainAddress.length > 0) {
             devices.push({
               name: service.name,
               host: mainAddress,

@@ -42,11 +42,7 @@ export interface PluginConfig {
   [key: string]: any;
 }
 
-export interface RemoteCallOptions {
-  id: string;
-  method: string;
-  args?: any[];
-}
+// Note: RemoteCallOptions removed - use remoteCall(id, method, ...args) directly
 
 export interface RemoteCallResult<T = any> {
   success: boolean;

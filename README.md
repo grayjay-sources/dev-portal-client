@@ -30,9 +30,13 @@ const client = await createClient();
 // Load your plugin
 await client.updateTestPlugin('http://localhost:3000/script.js', pluginConfig);
 
-// Test methods
-const homeResult = await client.testMethod(pluginId, 'getHome');
-console.log(homeResult);
+// Test methods (uses currently loaded plugin)
+const enableResult = await client.testMethod('enable');
+const homeResult = await client.testMethod('getHome');
+
+// Or call a specific plugin by ID
+const result = await client.remoteCall(pluginId, 'getHome');
+console.log(result);
 ```
 
 ### Manual IP
@@ -148,18 +152,23 @@ devices.forEach(device => {
 ### Remote Method Execution
 
 ```javascript
-// Execute any plugin method
-const result = await client.remoteCall({
-  id: 'plugin-uuid',
-  method: 'search',
-  args: ['my query', 'video', 'relevance', new Map()]
+// Test methods on currently loaded plugin (recommended)
+const enableResult = await client.testMethod('enable');
+const homeResult = await client.testMethod('getHome');
+const searchResult = await client.testMethod('search', {
+  query: 'my query',
+  type: 'video',
+  order: 'relevance'
 });
 
-if (result.success) {
-  console.log('Search results:', result.result);
+if (searchResult.success) {
+  console.log('Search results:', searchResult.result);
 } else {
-  console.error('Error:', result.error);
+  console.error('Error:', searchResult.error);
 }
+
+// Or call a specific plugin by ID
+const result = await client.remoteCall(pluginId, 'getHome');
 ```
 
 ## Dependencies

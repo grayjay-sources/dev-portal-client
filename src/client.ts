@@ -3,7 +3,7 @@
  */
 
 import * as http from 'http';
-import { PluginConfig, RemoteCallOptions, RemoteCallResult, DevLog } from './types';
+import { PluginConfig, RemoteCallResult, DevLog } from './types';
 
 export class DevPortalClient {
   private host: string;
@@ -69,15 +69,28 @@ export class DevPortalClient {
   }
 
   /**
-   * Execute remote call on plugin method
+   * Test a plugin method (uses currently loaded plugin)
+   * This is the primary method for testing - no plugin ID needed
    */
-  async remoteCall<T = any>(options: RemoteCallOptions): Promise<RemoteCallResult<T>> {
-    const { id, method, args = [] } = options;
-    const path = `/plugin/remoteCall?id=${id}&method=${method}`;
+  async testMethod(method: string, ...args: any[]): Promise<RemoteCallResult> {
+    const path = `/plugin/remoteTest?method=${method}`;
 
     try {
-      const result = await this.post(path, { args });
-      return { success: true, result };
+      // API expects args as JSON array, not object
+      const response = await this.post(path, args);
+      
+      // API returns { result, error }
+      if (response && response.error) {
+        return {
+          success: false,
+          error: response.error,
+        };
+      }
+      
+      return {
+        success: true,
+        result: response?.result,
+      };
     } catch (error) {
       return {
         success: false,
@@ -87,10 +100,36 @@ export class DevPortalClient {
   }
 
   /**
-   * Test a plugin method (simplified remote call)
+   * Execute remote call on a specific plugin by ID
+   * @param id Plugin UUID
+   * @param method Method name
+   * @param args Method arguments
    */
-  async testMethod(pluginId: string, method: string, ...args: any[]): Promise<RemoteCallResult> {
-    return this.remoteCall({ id: pluginId, method, args });
+  async remoteCall<T = any>(id: string, method: string, ...args: any[]): Promise<RemoteCallResult<T>> {
+    const path = `/plugin/remoteCall?id=${id}&method=${method}`;
+
+    try {
+      // API expects args as JSON array
+      const response = await this.post(path, args);
+      
+      // API returns { result, error }
+      if (response && response.error) {
+        return {
+          success: false,
+          error: response.error,
+        };
+      }
+      
+      return {
+        success: true,
+        result: response?.result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
   }
 
   /**
