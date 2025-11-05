@@ -73,19 +73,21 @@ async function main() {
     // Step 4: Fetch hosted config (directly, not via proxy)
     console.log("4️⃣  Fetching Hosted Config...");
     console.log(`   🔍 Fetching: ${YOUTUBE_PLUGIN_URL}`);
-    const https = require('https');
+    const https = require("https");
     const config = await new Promise((resolve, reject) => {
-      https.get(YOUTUBE_PLUGIN_URL, (res) => {
-        let data = '';
-        res.on('data', chunk => data += chunk);
-        res.on('end', () => {
-          try {
-            resolve(JSON.parse(data));
-          } catch (e) {
-            reject(e);
-          }
-        });
-      }).on('error', reject);
+      https
+        .get(YOUTUBE_PLUGIN_URL, (res) => {
+          let data = "";
+          res.on("data", (chunk) => (data += chunk));
+          res.on("end", () => {
+            try {
+              resolve(JSON.parse(data));
+            } catch (e) {
+              reject(e);
+            }
+          });
+        })
+        .on("error", reject);
     });
     console.log(`   ✅ Loaded: ${config.name} v${config.version}\n`);
 

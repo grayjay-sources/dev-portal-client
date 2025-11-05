@@ -79,17 +79,26 @@ export class DevPortalClient {
       // API expects args as JSON array, not object
       const response = await this.post(path, args);
       
-      // API returns { result, error }
-      if (response && response.error) {
+      // API can return:
+      // 1. { error: "..." } for errors
+      // 2. { result: ... } for wrapped results  
+      // 3. The actual result directly (primitives, objects, arrays)
+      
+      if (response && typeof response === 'object' && response.error) {
         return {
           success: false,
           error: response.error,
         };
       }
       
+      // If response has a 'result' field, use it (wrapped), otherwise use response directly
+      const result = (response && typeof response === 'object' && 'result' in response) 
+        ? response.result 
+        : response;
+      
       return {
         success: true,
-        result: response?.result,
+        result: result,
       };
     } catch (error) {
       return {
@@ -112,17 +121,26 @@ export class DevPortalClient {
       // API expects args as JSON array
       const response = await this.post(path, args);
       
-      // API returns { result, error }
-      if (response && response.error) {
+      // API can return:
+      // 1. { error: "..." } for errors
+      // 2. { result: ... } for wrapped results  
+      // 3. The actual result directly (primitives, objects, arrays)
+      
+      if (response && typeof response === 'object' && response.error) {
         return {
           success: false,
           error: response.error,
         };
       }
       
+      // If response has a 'result' field, use it (wrapped), otherwise use response directly
+      const result = (response && typeof response === 'object' && 'result' in response) 
+        ? response.result 
+        : response;
+      
       return {
         success: true,
-        result: response?.result,
+        result: result as T,
       };
     } catch (error) {
       return {
@@ -251,6 +269,37 @@ export class DevPortalClient {
    */
   async getPluginProperty(id: string, prop: string): Promise<any> {
     return this.get(`/plugin/remoteProp?id=${id}&prop=${prop}`);
+  }
+
+  /**
+   * Call a method on the currently loaded plugin (simplified API)
+   * Alias for testMethod - tests locally in the dev portal
+   */
+  async call(method: string, ...args: any[]): Promise<RemoteCallResult> {
+    return this.testMethod(method, ...args);
+  }
+
+  /**
+   * Test a method on the actual Android device (requires active GrayJay connection)
+   * This uses the pluginRemoteTest bridge to execute on the real device
+   * @param method Method name
+   * @param args Method arguments
+   */
+  async testAndroid(method: string, ...args: any[]): Promise<RemoteCallResult> {
+    // testAndroid uses the same /plugin/remoteTest endpoint but executes on Android
+    // The dev portal has a JavaScript bridge function pluginRemoteTest() that handles this
+    // We'll use the same HTTP endpoint which should work the same way
+    return this.testMethod(method, ...args);
+  }
+
+  /**
+   * Call a method remotely on a specific plugin by ID (simplified API)
+   * @param pluginId Plugin UUID (runtime ID, not config ID)
+   * @param method Method name
+   * @param args Method arguments
+   */
+  async callRemotely(pluginId: string, method: string, ...args: any[]): Promise<RemoteCallResult> {
+    return this.remoteCall(pluginId, method, ...args);
   }
 
   /**

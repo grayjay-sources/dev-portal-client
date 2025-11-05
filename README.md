@@ -27,16 +27,26 @@ const { createClient } = require("@grayjay-sources/dev-portal-client");
 // Auto-discover GrayJay devices
 const client = await createClient();
 
-// Load your plugin
-await client.updateTestPlugin("http://localhost:3000/script.js", pluginConfig);
+// Load portal and inject plugin
+await client.loadPortal(8000); // Wait 8 seconds for initialization
+await client.updateTestPlugin("https://plugins.grayjay.app/Youtube/YoutubeScript.js", config);
 
-// Test methods (uses currently loaded plugin)
-const enableResult = await client.testMethod("enable");
-const homeResult = await client.testMethod("getHome");
+// Simple API - Test methods on currently loaded plugin
+const enable = await client.call("enable");
+const isChannel = await client.call("isChannelUrl", "https://youtube.com/@test");
+// Returns: { success: true, result: true }
 
-// Or call a specific plugin by ID
-const result = await client.remoteCall(pluginId, "getHome");
-console.log(result);
+const home = await client.call("getHome");
+// Returns: { success: true, result: [{ name: "...", duration: 181, playbackTime: -1, thumbnails: {...} }] }
+
+// Test on actual Android device (if connected)
+const androidHome = await client.testAndroid("getHome");
+
+// Check results
+if (home.success) {
+  console.log(`Found ${home.result.length} videos`);
+  console.log(`First video: ${home.result[0].name}`);
+}
 ```
 
 ### Manual IP
