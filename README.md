@@ -226,11 +226,42 @@ const result = await client.remoteCall(pluginId, "getHome");
 
 ### Required
 
-- `bonjour` - mDNS device discovery (pure JavaScript)
+- `bonjour-service` - mDNS device discovery (pure JavaScript, no native compilation)
 
-### Optional
+The library handles all discovery mechanisms internally. No additional dependencies needed for device discovery.
 
-- `mdns` - Alternative mDNS (requires native compilation)
+## Known Limitations
+
+### Gson Serialization (Android Device Testing)
+
+When using `testMethodAndroid()` to test methods on an actual Android device via the `/plugin/remoteTest` endpoint, there are serialization limitations:
+
+- **Interface Types**: Cannot pass complex interface types (e.g., `IPlatformComment`) as arguments
+- **Workaround**: Use `testMethod()` which executes in the dev portal's JavaScript context instead
+- **Browser Testing**: The dev portal's browser interface handles this by executing locally
+
+For methods that require complex objects (like `getSubComments(comment)`), prefer testing via:
+1. The browser's "Test" button (executes locally)
+2. The `testMethod()` API (dev portal JavaScript context)
+3. Direct integration testing in the GrayJay app
+
+## Changelog
+
+### v1.3.1 (Latest)
+- Improved error handling for network operations
+- Enhanced test method reliability
+- Better documentation for known limitations
+
+### v1.3.0
+- Added plugin wrapper API (`client.plugin[method]()`)
+- Improved device discovery reliability
+- Enhanced network scanning performance
+- Better TypeScript type definitions
+
+### v1.2.0
+- Initial mDNS discovery support
+- Network scanning fallback
+- Complete dev portal API coverage
 
 ## License
 
