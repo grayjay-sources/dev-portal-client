@@ -178,7 +178,8 @@ export class DevPortalClient {
    * Get package code
    */
   async getPackage(packageName: string): Promise<string> {
-    return this.get(`/plugin/packageGet?variable=${packageName}`);
+    const result = await this.get(`/plugin/packageGet?variable=${packageName}`);
+    return typeof result === 'string' ? result : JSON.stringify(result);
   }
 
   /**

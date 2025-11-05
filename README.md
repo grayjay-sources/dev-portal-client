@@ -36,7 +36,10 @@ await client.updateTestPlugin(
 
 // Test methods on currently loaded plugin
 const enable = await client.testMethod("enable");
-const isChannel = await client.testMethod("isChannelUrl", "https://youtube.com/@test");
+const isChannel = await client.testMethod(
+  "isChannelUrl",
+  "https://youtube.com/@test"
+);
 // Returns: { success: true, result: true }
 
 const home = await client.testMethod("getHome");
@@ -44,7 +47,9 @@ const home = await client.testMethod("getHome");
 
 // Or use the wrapper (returns result directly, throws on error)
 const videos = await client.plugin.getHome(); // Returns array directly
-const isChannel2 = await client.plugin.isChannelUrl("https://youtube.com/@test"); // Returns true
+const isChannel2 = await client.plugin.isChannelUrl(
+  "https://youtube.com/@test"
+); // Returns true
 
 // Test on actual Android device (if connected)
 const androidHome = await client.testMethodAndroid("getHome");
@@ -90,24 +95,24 @@ new DevPortalClient(host: string, port: number = 11337)
 
 **API Methods:**
 
-| Method                                | Description                                   |
-| ------------------------------------- | --------------------------------------------- |
-| `testMethod(method, ...args)`         | Test method, returns `{ success, result, error }` |
+| Method                                | Description                                           |
+| ------------------------------------- | ----------------------------------------------------- |
+| `testMethod(method, ...args)`         | Test method, returns `{ success, result, error }`     |
 | `testMethodAndroid(method, ...args)`  | Test on Android, returns `{ success, result, error }` |
-| `plugin[method](...args)`             | Wrapper - returns result directly, throws on error |
-| `ping()`                              | Check if dev portal is accessible             |
-| `loadPortal(waitTime?)`               | Load portal and wait for JS initialization    |
-| `updateTestPlugin(scriptUrl, config)` | Inject plugin into dev server                 |
-| `remoteCall(id, method, ...args)`     | Execute method on specific plugin by ID       |
-| `isLoggedIn()`                        | Check plugin authentication status            |
-| `getDevLogs(startIndex?)`             | Get development logs                          |
-| `getWarnings()`                       | Get plugin warnings                           |
-| `getPackage(packageName)`             | Get package code (bridge, http, etc.)         |
-| `getPluginProperty(id, prop)`         | Get plugin property (e.g., supportedFeatures) |
-| `fetchContent(url, contentType?)`     | Fetch content via dev portal proxy            |
-| `testLogin()`                         | Test plugin login flow                        |
-| `testLogout()`                        | Test plugin logout flow                       |
-| `testCaptcha(captchaData)`            | Test plugin captcha handling                  |
+| `plugin[method](...args)`             | Wrapper - returns result directly, throws on error    |
+| `ping()`                              | Check if dev portal is accessible                     |
+| `loadPortal(waitTime?)`               | Load portal and wait for JS initialization            |
+| `updateTestPlugin(scriptUrl, config)` | Inject plugin into dev server                         |
+| `remoteCall(id, method, ...args)`     | Execute method on specific plugin by ID               |
+| `isLoggedIn()`                        | Check plugin authentication status                    |
+| `getDevLogs(startIndex?)`             | Get development logs                                  |
+| `getWarnings()`                       | Get plugin warnings                                   |
+| `getPackage(packageName)`             | Get package code (bridge, http, etc.)                 |
+| `getPluginProperty(id, prop)`         | Get plugin property (e.g., supportedFeatures)         |
+| `fetchContent(url, contentType?)`     | Fetch content via dev portal proxy                    |
+| `testLogin()`                         | Test plugin login flow                                |
+| `testLogout()`                        | Test plugin logout flow                               |
+| `testCaptcha(captchaData)`            | Test plugin captcha handling                          |
 
 **Return Format:**
 
