@@ -34,19 +34,16 @@ await client.updateTestPlugin(
   config
 );
 
-// Simple API - Test methods on currently loaded plugin
-const enable = await client.call("enable");
-const isChannel = await client.call(
-  "isChannelUrl",
-  "https://youtube.com/@test"
-);
+// Test methods on currently loaded plugin  
+const enable = await client.testMethod("enable");
+const isChannel = await client.testMethod("isChannelUrl", "https://youtube.com/@test");
 // Returns: { success: true, result: true }
 
-const home = await client.call("getHome");
+const home = await client.testMethod("getHome");
 // Returns: { success: true, result: [{ name: "...", duration: 181, playbackTime: -1, thumbnails: {...} }] }
 
 // Test on actual Android device (if connected)
-const androidHome = await client.testAndroid("getHome");
+const androidHome = await client.testMethodAndroid("getHome");
 
 // Check results
 if (home.success) {
@@ -87,39 +84,33 @@ new DevPortalClient(host: string, port: number = 11337)
 
 #### Methods
 
-**Simplified API (Recommended):**
+**API Methods:**
 
-| Method                              | Description                                       |
-| ----------------------------------- | ------------------------------------------------- |
-| `call(method, ...args)`             | Call method on currently loaded plugin (local)    |
-| `testAndroid(method, ...args)`      | Test method on actual Android device              |
-| `callRemotely(id, method, ...args)` | Call method on specific plugin by runtime ID      |
-
-**Full API:**
-
-| Method                                | Description                                |
-| ------------------------------------- | ------------------------------------------ |
-| `ping()`                              | Check if dev portal is accessible          |
-| `loadPortal(waitTime?)`               | Load portal and wait for JS initialization |
-| `updateTestPlugin(scriptUrl, config)` | Inject plugin into dev server              |
-| `testMethod(method, ...args)`         | Test method on currently loaded plugin     |
-| `remoteCall(id, method, ...args)`     | Execute method on specific plugin by ID    |
-| `isLoggedIn()`                        | Check plugin authentication status         |
-| `getDevLogs(startIndex?)`             | Get development logs                       |
-| `getWarnings()`                       | Get plugin warnings                        |
-| `getPackage(packageName)`             | Get package code (bridge, http, etc.)      |
+| Method                                | Description                                   |
+| ------------------------------------- | --------------------------------------------- |
+| `testMethod(method, ...args)`         | Test method on currently loaded plugin        |
+| `testMethodAndroid(method, ...args)`  | Test method on actual Android device          |
+| `ping()`                              | Check if dev portal is accessible             |
+| `loadPortal(waitTime?)`               | Load portal and wait for JS initialization    |
+| `updateTestPlugin(scriptUrl, config)` | Inject plugin into dev server                 |
+| `remoteCall(id, method, ...args)`     | Execute method on specific plugin by ID       |
+| `isLoggedIn()`                        | Check plugin authentication status            |
+| `getDevLogs(startIndex?)`             | Get development logs                          |
+| `getWarnings()`                       | Get plugin warnings                           |
+| `getPackage(packageName)`             | Get package code (bridge, http, etc.)         |
 | `getPluginProperty(id, prop)`         | Get plugin property (e.g., supportedFeatures) |
-| `fetchContent(url, contentType?)`     | Fetch content via dev portal proxy         |
-| `testLogin()`                         | Test plugin login flow                     |
-| `testLogout()`                        | Test plugin logout flow                    |
-| `testCaptcha(captchaData)`            | Test plugin captcha handling               |
+| `fetchContent(url, contentType?)`     | Fetch content via dev portal proxy            |
+| `testLogin()`                         | Test plugin login flow                        |
+| `testLogout()`                        | Test plugin logout flow                       |
+| `testCaptcha(captchaData)`            | Test plugin captcha handling                  |
 
 **Return Format:**
+
 ```typescript
 interface RemoteCallResult<T = any> {
   success: boolean;
-  result?: T;      // Present when success is true
-  error?: string;  // Present when success is false
+  result?: T; // Present when success is true
+  error?: string; // Present when success is false
 }
 ```
 

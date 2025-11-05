@@ -272,34 +272,16 @@ export class DevPortalClient {
   }
 
   /**
-   * Call a method on the currently loaded plugin (simplified API)
-   * Alias for testMethod - tests locally in the dev portal
-   */
-  async call(method: string, ...args: any[]): Promise<RemoteCallResult> {
-    return this.testMethod(method, ...args);
-  }
-
-  /**
    * Test a method on the actual Android device (requires active GrayJay connection)
    * This uses the pluginRemoteTest bridge to execute on the real device
    * @param method Method name
    * @param args Method arguments
    */
-  async testAndroid(method: string, ...args: any[]): Promise<RemoteCallResult> {
-    // testAndroid uses the same /plugin/remoteTest endpoint but executes on Android
+  async testMethodAndroid(method: string, ...args: any[]): Promise<RemoteCallResult> {
+    // testMethodAndroid uses the same /plugin/remoteTest endpoint but executes on Android
     // The dev portal has a JavaScript bridge function pluginRemoteTest() that handles this
     // We'll use the same HTTP endpoint which should work the same way
     return this.testMethod(method, ...args);
-  }
-
-  /**
-   * Call a method remotely on a specific plugin by ID (simplified API)
-   * @param pluginId Plugin UUID (runtime ID, not config ID)
-   * @param method Method name
-   * @param args Method arguments
-   */
-  async callRemotely(pluginId: string, method: string, ...args: any[]): Promise<RemoteCallResult> {
-    return this.remoteCall(pluginId, method, ...args);
   }
 
   /**
