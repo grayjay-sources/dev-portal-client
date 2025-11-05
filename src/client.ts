@@ -172,9 +172,85 @@ export class DevPortalClient {
 
   /**
    * Fetch content via dev portal proxy
+   * @param url The URL to fetch
+   * @param contentType Content type hint (text/json, application/js, etc.)
    */
-  async fetchContent(url: string, contentType: string = 'text/json'): Promise<any> {
-    return this.post(`/get?CT=${contentType}`, url);
+  async fetchContent(url: string, contentType: string = 'text/json', debug: boolean = false): Promise<any> {
+    // Dev portal expects the URL as a JSON string literal in the body
+    // Example: "https://example.com" (with quotes)
+    const endpoint = `/get?CT=${contentType}`;
+    
+    if (debug) {
+      console.log(`[DEBUG] fetchContent endpoint: ${endpoint}`);
+      console.log(`[DEBUG] fetchContent url: ${url}`);
+      console.log(`[DEBUG] Will send as JSON string: ${JSON.stringify(url)}`);
+    }
+    
+    // Send as raw JSON string (already stringified, so mark as special)
+    return this.postRaw(endpoint, JSON.stringify(url), debug);
+  }
+
+  /**
+   * Test plugin login
+   */
+  async testLogin(): Promise<RemoteCallResult> {
+    try {
+      const response = await this.post('/plugin/loginTestPlugin', {});
+      return {
+        success: true,
+        result: response,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  /**
+   * Test plugin logout
+   */
+  async testLogout(): Promise<RemoteCallResult> {
+    try {
+      const response = await this.post('/plugin/logoutTestPlugin', {});
+      return {
+        success: true,
+        result: response,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  /**
+   * Test plugin captcha
+   */
+  async testCaptcha(captchaData: any): Promise<RemoteCallResult> {
+    try {
+      const response = await this.post('/plugin/captchaTestPlugin', captchaData);
+      return {
+        success: true,
+        result: response,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  /**
+   * Get plugin property (like supportedFeatures)
+   * @param id Plugin UUID
+   * @param prop Property name
+   */
+  async getPluginProperty(id: string, prop: string): Promise<any> {
+    return this.get(`/plugin/remoteProp?id=${id}&prop=${prop}`);
   }
 
   /**
@@ -213,11 +289,23 @@ export class DevPortalClient {
   }
 
   /**
-   * Generic POST request
+   * Generic POST request (auto-stringifies payload)
    */
-  private async post(path: string, payload: any): Promise<any> {
+  private async post(path: string, payload: any, debug: boolean = false): Promise<any> {
+    const data = typeof payload === 'string' ? payload : JSON.stringify(payload);
+    return this.postRaw(path, data, debug);
+  }
+
+  /**
+   * POST request with raw data (no auto-stringification)
+   */
+  private async postRaw(path: string, data: string, debug: boolean = false): Promise<any> {
     return new Promise((resolve, reject) => {
-      const data = typeof payload === 'string' ? payload : JSON.stringify(payload);
+      if (debug) {
+        console.log(`[DEBUG] POST ${this.baseUrl}${path}`);
+        console.log(`[DEBUG] Data being sent: ${data.substring(0, 200)}...`);
+        console.log(`[DEBUG] Data length: ${Buffer.byteLength(data)}`);
+      }
 
       const options = {
         hostname: this.host,
